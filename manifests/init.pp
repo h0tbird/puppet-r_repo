@@ -6,4 +6,8 @@ class r_repo {
     port    => '80',
     docroot => '/var/www/repos',
   }
+
+  package { 'yum-utils':
+    ensure => latest,
+  }
 }
