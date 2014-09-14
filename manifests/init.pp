@@ -7,7 +7,7 @@ class r_repo {
     docroot => '/var/www/repos',
   }
 
-  package { 'yum-utils':
+  package { [ 'yum-utils', 'createrepo' ]:
     ensure => latest,
   }
 }
