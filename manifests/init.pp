@@ -10,4 +10,12 @@ class r_repo {
   package { [ 'yum-utils', 'createrepo' ]:
     ensure => latest,
   }
+
+  file { '/usr/local/bin/syncrepo':
+    ensure  => present,
+    content => template("${module_name}/syncrepo.erb"),
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0755',
+  }
 }
