@@ -1,5 +1,9 @@
 class r_repo {
 
+  #----------------
+  # Apache server:
+  #----------------
+
   class { 'apache': }
 
   apache::vhost { 'repo01.demo.lan':
@@ -7,7 +11,11 @@ class r_repo {
     docroot => '/var/www/repos',
   }
 
-  package { [ 'yum-utils', 'createrepo' ]:
+  #-------------------------------
+  # Stuff to manage repositories:
+  #-------------------------------
+
+  package { [ 'yum-utils', 'createrepo', 'repoview' ]:
     ensure => latest,
   }
 
