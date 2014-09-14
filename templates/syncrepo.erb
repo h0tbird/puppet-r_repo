@@ -16,7 +16,7 @@ reposync -c /tmp/yum.conf -r ${1} -d -p ${2} -n
 # Create a repomd (xml-rpm-metadata) repository from a set of rpms:
 #------------------------------------------------------------------------------
 
-createrepo ${2}/${1}
+createrepo -c ${2}/${1}/cachedir --update ${2}/${1}
 
 #------------------------------------------------------------------------------
 # Create a set of static HTML pages for easy browsing:
