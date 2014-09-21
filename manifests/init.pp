@@ -15,7 +15,7 @@ class r_repo {
   # Stuff to manage repositories:
   #-------------------------------
 
-  package { [ 'yum-utils', 'createrepo', 'repoview' ]:
+  package { [ 'yum-utils', 'createrepo' ]:
     ensure => latest,
   }
 
