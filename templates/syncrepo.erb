@@ -51,4 +51,10 @@ case $1 in
   wget -q http://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7 -P /var/www/repos/centos/7/epel/
   ;;
 
+'misc')
+  createrepo -c /var/www/repos/centos/7/misc/cachedir \
+  --update /var/www/repos/centos/7/misc
+  repoview -t misc /var/www/repos/centos/7/misc
+  ;;
+
 esac
