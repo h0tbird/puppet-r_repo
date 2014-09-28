@@ -2,7 +2,7 @@ class r_repo::repos inherits r_repo {
 
   if $repos {
 
-    package { [ 'yum-utils', 'createrepo' ]:
+    package { [ 'yum-utils', 'createrepo', 'repoview' ]:
       ensure => latest,
     }
 
