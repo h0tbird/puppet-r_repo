@@ -1,41 +1,54 @@
 #!/bin/bash
 
 #------------------------------------------------------------------------------
-# CentOS Base:
-#------------------------------------------------------------------------------
-
-rsync -avn --progress rsync://mirrors.kernel.org/centos/7/os/x86_64/ /var/www/repos/centos/7/os/x86_64/
-
-#------------------------------------------------------------------------------
-# CentOS Updates:
-#------------------------------------------------------------------------------
-
-rsync -avn --progress rsync://mirrors.kernel.org/centos/7/updates/x86_64/ /var/www/repos/centos/7/updates/x86_64/
-
-#------------------------------------------------------------------------------
 # Produce a valid yum.conf:
 #------------------------------------------------------------------------------
 
 sed '/exclude/c\exclude=*.i?86' /etc/yum.conf > /tmp/yum.conf
 
 #------------------------------------------------------------------------------
-# puppetlabs-products:
+# Do the job:
 #------------------------------------------------------------------------------
 
-reposync -c /tmp/yum.conf -r puppetlabs-products -d -p /var/www/repos/puppet/ -n
-createrepo -c /var/www/repos/puppet/puppetlabs-products/cachedir --update /var/www/repos/puppet/puppetlabs-products
-[ -f /var/www/repos/puppet/RPM-GPG-KEY-puppetlabs ] || wget -q http://yum.puppetlabs.com/RPM-GPG-KEY-puppetlabs -P /var/www/repos/puppet/
+case $1 in
 
-#------------------------------------------------------------------------------
-# puppetlabs-deps:
-#------------------------------------------------------------------------------
+'base')
+  rsync -avn --progress rsync://mirrors.kernel.org/centos/7/os/x86_64/ \
+  /var/www/repos/centos/7/os/x86_64/
+  ;;
 
-reposync -c /tmp/yum.conf -r puppetlabs-deps -d -p /var/www/repos/puppet/ -n
-createrepo -c /var/www/repos/puppet/puppetlabs-deps/cachedir --update /var/www/repos/puppet/puppetlabs-deps
-[ -f /var/www/repos/puppet/RPM-GPG-KEY-puppetlabs ] || wget -q http://yum.puppetlabs.com/RPM-GPG-KEY-puppetlabs -P /var/www/repos/puppet/
+'updates')
+  reposync -c /tmp/yum.conf -r updates -d -p /var/www/repos/centos/7/ -n
+  createrepo -c /var/www/repos/centos/7/updates/cachedir \
+  --update /var/www/repos/centos/7/updates
+  repoview -t updates /var/www/repos/centos/7/updates
+  ;;
 
-#------------------------------------------------------------------------------
-# Create a set of static HTML pages for easy browsing:
-#------------------------------------------------------------------------------
+'puppetlabs-products')
+  reposync -c /tmp/yum.conf -r puppetlabs-products -d -p /var/www/repos/puppet/ -n
+  createrepo -c /var/www/repos/puppet/puppetlabs-products/cachedir \
+  --update /var/www/repos/puppet/puppetlabs-products
+  repoview -t puppetlabs-products /var/www/repos/puppet/puppetlabs-products
+  [ -f /var/www/repos/puppet/RPM-GPG-KEY-puppetlabs ] || \
+  wget -q http://yum.puppetlabs.com/RPM-GPG-KEY-puppetlabs -P /var/www/repos/puppet/
+  ;;
 
-# repoview -t $1 ${2}/${1}
+'puppetlabs-deps')
+  reposync -c /tmp/yum.conf -r puppetlabs-deps -d -p /var/www/repos/puppet/ -n
+  createrepo -c /var/www/repos/puppet/puppetlabs-deps/cachedir \
+  --update /var/www/repos/puppet/puppetlabs-deps
+  repoview -t puppetlabs-deps /var/www/repos/puppet/puppetlabs-deps
+  [ -f /var/www/repos/puppet/RPM-GPG-KEY-puppetlabs ] || \
+  wget -q http://yum.puppetlabs.com/RPM-GPG-KEY-puppetlabs -P /var/www/repos/puppet/
+  ;;
+
+'epel')
+  reposync -c /tmp/yum.conf -r epel -d -p /var/www/repos/centos/7/ -n
+  createrepo -c /var/www/repos/centos/7/epel/cachedir \
+  --update /var/www/repos/centos/7/epel
+  repoview -t epel /var/www/repos/centos/7/epel
+  [ -f /var/www/repos/centos/7/epel/RPM-GPG-KEY-EPEL-7 ] || \
+  wget -q http://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7 -P /var/www/repos/centos/7/epel/
+  ;;
+
+esac
