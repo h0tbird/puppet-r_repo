@@ -1,25 +1,41 @@
 #!/bin/bash
 
 #------------------------------------------------------------------------------
+# CentOS Base:
+#------------------------------------------------------------------------------
+
+rsync -avn --progress rsync://mirrors.kernel.org/centos/7/os/x86_64/ /var/www/repos/centos/7/os/x86_64/
+
+#------------------------------------------------------------------------------
+# CentOS Updates:
+#------------------------------------------------------------------------------
+
+rsync -avn --progress rsync://mirrors.kernel.org/centos/7/updates/x86_64/ /var/www/repos/centos/7/updates/x86_64/
+
+#------------------------------------------------------------------------------
 # Produce a valid yum.conf:
 #------------------------------------------------------------------------------
 
 sed '/exclude/c\exclude=*.i?86' /etc/yum.conf > /tmp/yum.conf
 
 #------------------------------------------------------------------------------
-# Synchronize a remote YUM repository with a local directory:
+# puppetlabs-products:
 #------------------------------------------------------------------------------
 
-reposync -c /tmp/yum.conf -r ${1} -d -p ${2} -n
+reposync -c /tmp/yum.conf -r puppetlabs-products -d -p /var/www/repos/puppet/ -n
+createrepo -c /var/www/repos/puppet/puppetlabs-products/cachedir --update /var/www/repos/puppet/puppetlabs-products
+[ -f /var/www/repos/puppet/RPM-GPG-KEY-puppetlabs ] || wget -q http://yum.puppetlabs.com/RPM-GPG-KEY-puppetlabs -P /var/www/repos/puppet/
 
 #------------------------------------------------------------------------------
-# Create a repomd (xml-rpm-metadata) repository from a set of rpms:
+# puppetlabs-deps:
 #------------------------------------------------------------------------------
 
-createrepo -c ${2}/${1}/cachedir --update ${2}/${1}
+reposync -c /tmp/yum.conf -r puppetlabs-deps -d -p /var/www/repos/puppet/ -n
+createrepo -c /var/www/repos/puppet/puppetlabs-deps/cachedir --update /var/www/repos/puppet/puppetlabs-deps
+[ -f /var/www/repos/puppet/RPM-GPG-KEY-puppetlabs ] || wget -q http://yum.puppetlabs.com/RPM-GPG-KEY-puppetlabs -P /var/www/repos/puppet/
 
 #------------------------------------------------------------------------------
 # Create a set of static HTML pages for easy browsing:
 #------------------------------------------------------------------------------
 
-repoview -t $1 ${2}/${1}
+# repoview -t $1 ${2}/${1}
