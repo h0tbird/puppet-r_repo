@@ -57,4 +57,8 @@ case $1 in
   repoview -t misc /var/www/repos/centos/7/misc
   ;;
 
+*)
+  echo "Usage: $0 [base|updates|puppetlabs-products|puppetlabs-deps|epel|misc]"
+  ;;
+
 esac
